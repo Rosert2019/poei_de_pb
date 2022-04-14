@@ -11,7 +11,8 @@ producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=
 #connexion to tweeter API
 class StdOutListener(tweepy.Stream):
     def on_status(self, status):
-        data = {'id_tweet' : status.id, 'created_at' : str(status.created_at).split(" ")[1], 'text':status.text, 'location_user':status.user.location, 'flag_geo':status.user._json['geo_enabled']}
+        data = {'id_tweet' : status.id, 'created_at' : str(status.created_at).split(" ")[1], 'text':status.text, 'location_user':status.user.location, 'flag_geo':status.user._json['geo_enabled'], 'number of likes': status.favorite_count,
+'number of retweets':status.retweet_count, 'user_numner_followers':status.user.followers_count}
       
 
         print(data)
