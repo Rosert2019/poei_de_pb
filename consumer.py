@@ -6,7 +6,7 @@ import streamlit as st
 import requests
 import industrialisation #l'importation du classifier contenu dans le fichier pickle
 
-st.title("Lecture des tweets en streaming et analyse sentimentale") 
+st.title("Analyse en temps réel des tweets: Cas des avis des spectateurs aux cinémas") 
 
 
 consumer = KafkaConsumer(
@@ -52,12 +52,17 @@ for tweet in consumer:
     else:
         tweet['location_user'] = tweet['location_user']
 
-    #envoie dans power bi service 
-    res = requests.post(end_point_pb, data=json.dumps([tweet])) 
+    #envoie dans power bi service
+    tweet_bi = tweet
+    #exclusion nouvelles clées
+    tweet_bi = dict((k, tweet[k]) for k in ('id_tweet', 'created_at', 'text', 'location_user','flag_geo', 'review', 'flag_pos', 'flag_neg', 'minutes', 'hours'))
+    res = requests.post(end_point_pb, data=json.dumps([tweet_bi])) 
     tweet['status_bi'] = res.status_code
 
     #print dans streamlit
-    tweetDataFrame = pd.DataFrame([tweet])
+    #exclusion nouvelles clées non utiles
+    tweetierce = dict((k, tweet[k]) for k in ('id_tweet', 'created_at', 'text', 'location_user', 'review',  'number of likes', 'number of retweets', 'user_numner_followers', 'hours'))
+    tweetDataFrame = pd.DataFrame([tweetierce])
     st.table(tweetDataFrame)
 
     flag_pos = 0
